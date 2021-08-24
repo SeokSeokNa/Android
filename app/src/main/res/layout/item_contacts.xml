@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="50dp">
+
+    <!--데이터목록 하나하나 표현할 화면-->
+
+    <TextView
+        android:id="@+id/mUserId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/mUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">We are Memory</string>
+
+    <string name="main_title">Transition Button</string>
+    <string name="main_button">login</string>
+    <string name="login_id_hint">ID</string>
+    <string name="login_password_hint">Password</string>
+</resources>
