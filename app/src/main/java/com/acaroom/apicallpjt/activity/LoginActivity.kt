@@ -13,6 +13,9 @@ import com.acaroom.apicallpjt.data_domain.LoginResDto
 import com.royrodriguez.transitionbutton.TransitionButton
 import com.royrodriguez.transitionbutton.TransitionButton.OnAnimationStopEndListener
 import kotlinx.android.synthetic.main.activit_login.*
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.main_drawer_header.*
+import kotlinx.android.synthetic.main.main_drawer_header.view.*
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -65,6 +68,7 @@ class LoginActivity : AppCompatActivity() {
                     var result = response.body();
                     if (result?.status != 1) App.prefs.token = ""
                     Toast.makeText(this@LoginActivity, "${result?.status} , ${result?.message}", Toast.LENGTH_SHORT).show()
+
                 }
 
                 override fun onFailure(call: Call<LoginResDto>, t: Throwable) {
@@ -89,11 +93,14 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this@LoginActivity, "로그인 완료!", Toast.LENGTH_SHORT).show()
                         App.prefs.token = result?.userAccess?.accessToken;//내부 저장소에 받아온 토큰 넣어두기
                         Log.i("결과", result.toString());
+
                         transition_button.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND,
                             OnAnimationStopEndListener {
-                                val intent = Intent(baseContext, MainActivity::class.java)
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                intent.putExtra("login_name",result.userAccess.userName)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                                 startActivity(intent)
+                                finish()
                             })
                     } else {
                         Toast.makeText(this@LoginActivity, "아이디 또는 비밀번호가 틀렸습니다!", Toast.LENGTH_SHORT).show()

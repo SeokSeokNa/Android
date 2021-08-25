@@ -5,4 +5,9 @@
     <string name="main_button">login</string>
     <string name="login_id_hint">ID</string>
     <string name="login_password_hint">Password</string>
+
+
+    <string name="title">We are Memory</string>
+    <string name="menu_member">회원목록</string>
+    <string name="menu_board">게시판</string>
 </resources>

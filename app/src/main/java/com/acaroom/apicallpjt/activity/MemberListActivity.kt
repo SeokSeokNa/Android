@@ -23,7 +23,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class ListActivity : AppCompatActivity() {
+class MemberListActivity : AppCompatActivity() {
     val contactsList : ArrayList<MemberDto> = arrayListOf<MemberDto>()
 
     var retrofit = Retrofit.Builder()
@@ -42,10 +42,10 @@ class ListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_list)
         val adapter = ContactsListAdapter(contactsList)
         mRecyclerView.adapter= adapter //정확히는 모르겠으나 셋팅까지 다한 어뎁터를 화면에 초기화 하면 셋팅이 됨
-        var dialog = AlertDialog.Builder(this@ListActivity)
+        var dialog = AlertDialog.Builder(this@MemberListActivity)
         dialog.setTitle("오류")
         dialog.setPositiveButton("예", DialogInterface.OnClickListener() { _, _->
-            val intent = Intent(this@ListActivity, MainActivity::class.java)
+            val intent = Intent(this@MemberListActivity, MainActivity::class.java)
             startActivity(intent)
         })
 
@@ -88,7 +88,7 @@ class ListActivity : AppCompatActivity() {
 
                 override fun onFailure(call: Call<List<MemberDto>>, t: Throwable) {
                     dialog.setTitle("알람!").setMessage("통신 오류 !! = ${t.message}").show()
-                    Toast.makeText(this@ListActivity, "실패!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MemberListActivity, "실패!", Toast.LENGTH_SHORT).show()
                 }
             })
 

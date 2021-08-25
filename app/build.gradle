@@ -47,6 +47,9 @@ dependencies {
     implementation 'com.royrodriguez:transitionbutton:0.2.0'
     implementation "androidx.constraintlayout:constraintlayout:2.1.0"
 
+    implementation "com.google.android.material:material:1.2.0-alpha02" // NavigationView
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0' // DrawerLayout
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
