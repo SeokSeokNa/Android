@@ -49,6 +49,9 @@ dependencies {
 
     implementation "com.google.android.material:material:1.2.0-alpha02" // NavigationView
     implementation 'androidx.legacy:legacy-support-v4:1.0.0' // DrawerLayout
+    implementation 'com.google.android.material:material:1.0.0'
+
+
 
 
     /*startActivityForResult가 더이상 사용되지 않으면서 registerForActivityResult를 사용하게 되었음 그래서 이걸 추가해줘야함*/

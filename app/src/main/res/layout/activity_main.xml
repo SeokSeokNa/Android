@@ -21,10 +21,6 @@
 <!--        android:layout_height="match_parent"-->
 <!--        layout="@layout/main_layout" />-->
 
-
-
-
-
     <!--자식 레이아웃. Navigation Drawer
             - headerLayout : 헤더영역
             - app:menu : 네비게이션 영역(메뉴 나오는 영역)
