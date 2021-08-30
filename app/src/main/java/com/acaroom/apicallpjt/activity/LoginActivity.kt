@@ -1,5 +1,6 @@
 package com.acaroom.apicallpjt.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -92,14 +93,15 @@ class LoginActivity : AppCompatActivity() {
                     if (result?.status == 1) {
                         Toast.makeText(this@LoginActivity, "로그인 완료!", Toast.LENGTH_SHORT).show()
                         App.prefs.token = result?.userAccess?.accessToken;//내부 저장소에 받아온 토큰 넣어두기
+                        App.prefs.userNm = result?.userAccess.userName;//내부 저장소에 받아온 유저이름 넣어두기
                         Log.i("결과", result.toString());
 
                         transition_button.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND,
                             OnAnimationStopEndListener {
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                 intent.putExtra("login_name",result.userAccess.userName)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                startActivity(intent)
+                                //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                setResult(Activity.RESULT_OK , intent)
                                 finish()
                             })
                     } else {

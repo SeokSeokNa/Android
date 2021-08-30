@@ -6,28 +6,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
 
 
     <!--메인 레이아웃  , Drawer 안했을때에 그냥 상단에 있는 것-->
-    <include
+    <FrameLayout
+        android:id="@+id/fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/main_layout" />
+        android:padding="16dp">
+    </FrameLayout>
+<!--    <include-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        layout="@layout/main_layout" />-->
+
+
+
+
 
     <!--자식 레이아웃. Navigation Drawer
             - headerLayout : 헤더영역
             - app:menu : 네비게이션 영역(메뉴 나오는 영역)
     -->
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/main_navigationView"
-        android:layout_width="wrap_content"
+        android:id="@+id/nav"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="left"
-        android:text="메인 레이아웃"
+        android:layout_gravity="start"
         app:headerLayout="@layout/main_drawer_header"
-        app:menu="@menu/main_drawer_navi_menu">
+        app:menu="@menu/main_drawer_navi_menu"
+        app:itemIconTint="#424242">
     </com.google.android.material.navigation.NavigationView>
 
 

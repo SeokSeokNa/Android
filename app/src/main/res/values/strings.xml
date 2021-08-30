@@ -10,4 +10,6 @@
     <string name="title">We are Memory</string>
     <string name="menu_member">회원목록</string>
     <string name="menu_board">게시판</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
