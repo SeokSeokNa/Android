@@ -60,4 +60,18 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <ImageView
+        android:id="@+id/my_image"
+        android:layout_width="305dp"
+        android:layout_height="174dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="40dp"
+        android:src="@drawable/pic"
+        app:layout_constraintBottom_toTopOf="@+id/regist_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/board_content"
+        app:layout_constraintVertical_bias="0.119" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--공용 외부  저장소 , Environment.getExternalStorageDirectory()-->
+    <external-path name="my_images" path="Android/data/com.acaroom.apicallpjt/files/Pictures" />
+</paths>
