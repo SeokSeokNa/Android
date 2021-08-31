@@ -63,6 +63,9 @@ class BoardFragment : Fragment() {
         var dialog = AlertDialog.Builder(view.context)
         dialog.setTitle("오류")
         dialog.setPositiveButton("예", DialogInterface.OnClickListener() { _, _ ->
+            (activity as MainActivity).supportFragmentManager.beginTransaction()
+                .remove(this)
+                .commit()
 
         })
         val adapter = BoardListAdapter(boardDtoList)

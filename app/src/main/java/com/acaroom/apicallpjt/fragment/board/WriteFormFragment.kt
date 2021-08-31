@@ -152,7 +152,10 @@ class WriteFormFragment : Fragment() {
                                 "예",
                                 DialogInterface.OnClickListener { _, _ ->
                                     customProgressDialog.dismiss()
-
+                                    var activity = (getActivity() as MainActivity?)!!
+                                    activity.supportFragmentManager.beginTransaction()
+                                        .replace(R.id.fragment, BoardFragment())
+                                        .commit()
                                 })
 
                             dialog.setMessage("등록되었습니다!").show()
@@ -220,32 +223,6 @@ class WriteFormFragment : Fragment() {
         return result
     }
 
-
-
-
-//    private fun getRealPathFormURI(@NotNull contentURI: Uri?): String? {
-//        if (contentURI?.path?.startsWith("/storage") == true) {
-//            return contentURI.path.toString()
-//        }
-//        var id = DocumentsContract.getDocumentId(context ,contentURI).split(":")[1]
-//        var columns= Array<String>(3){MediaStore.Files.FileColumns.DATA}
-//
-//        var selection = MediaStore.Files.FileColumns._ID + " = " + id;
-//        var cursor =
-//            activity?.contentResolver?.query(MediaStore.Files.getContentUri("external"),
-//                columns, selection, null, null);
-//
-//        try {
-//            var columnIndex = cursor?.getColumnIndex(columns[0])
-//            if (cursor?.moveToFirst() == true) {
-//                return cursor.getString(columnIndex!!)
-//            }
-//        } finally {
-//            cursor?.close()
-//        }
-//        return null
-//
-//    }
 
 
 
