@@ -43,7 +43,8 @@ import java.io.File
 class WriteFormFragment : Fragment() {
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_GALLERY_TAKE = 2
-    lateinit var destFile:File
+    var images = ArrayList<MultipartBody.Part>()
+    var destFile: File? = null
     lateinit var customProgressDialog: ProgressDialog
     lateinit var dialog: AlertDialog.Builder
     var handler = Handler()
@@ -118,16 +119,19 @@ class WriteFormFragment : Fragment() {
 
 
     private fun postBoard(title: String, content: String) {
-        // RequestBody로 변환
-        var requestBmp = RequestBody.create(MediaType.parse("multipart/form-data"), destFile)
-        // MultipartBody.Part로 파일 컨버전
-        var bmp = MultipartBody.Part.createFormData("files", destFile.name, requestBmp)
+        if (destFile != null) {
+            // RequestBody로 변환
+            var requestBmp = RequestBody.create(MediaType.parse("multipart/form-data"), destFile)
+            // MultipartBody.Part로 파일 컨버전
+            var bmp = MultipartBody.Part.createFormData("files", destFile?.name, requestBmp)
+            images.add(bmp)
+        }
+
 
         val title_result = RequestBody.create(okhttp3.MultipartBody.FORM, title)
         val content_result = RequestBody.create(okhttp3.MultipartBody.FORM, content)
 
-        var images = ArrayList<MultipartBody.Part>()
-        images.add(bmp)
+
 
 
         var map  = HashMap<String, RequestBody>()
