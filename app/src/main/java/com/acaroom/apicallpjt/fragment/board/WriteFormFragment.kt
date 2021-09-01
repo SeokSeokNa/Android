@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,12 +22,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
 import com.acaroom.apicallpjt.MainActivity
 import com.acaroom.apicallpjt.R
 import com.acaroom.apicallpjt.apiService.BoardService
 import com.acaroom.apicallpjt.dialog.ProgressDialog
+import com.acaroom.apicallpjt.recycler_view.BoardFormAdapter
 import kotlinx.android.synthetic.main.fragment_write_form.*
 import kotlinx.android.synthetic.main.fragment_write_form.view.*
 import okhttp3.MediaType
@@ -45,9 +50,12 @@ class WriteFormFragment : Fragment() {
     val REQUEST_GALLERY_TAKE = 2
     var images = ArrayList<MultipartBody.Part>()
     var destFile: File? = null
+
     lateinit var customProgressDialog: ProgressDialog
     lateinit var dialog: AlertDialog.Builder
     var handler = Handler()
+    var boardPhotoList : ArrayList<Uri> = arrayListOf()
+    val adapter = BoardFormAdapter(boardPhotoList)
     var retrofit = Retrofit.Builder()
         .baseUrl(Config.url)
         .addConverterFactory(GsonConverterFactory.create())
@@ -62,11 +70,30 @@ class WriteFormFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_write_form, container, false)
 
+        //제목 입력후 엔터키 누르면 내용 입력칸으로 이동
+        view.board_title.setOnKeyListener { v, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+               view.board_content.requestFocus()
+            }
+            true
+        }
+
+
         dialog = AlertDialog.Builder(view.context)
         dialog.setTitle("알림")
 
         var activity: MainActivity
         activity = (getActivity() as MainActivity?)!!
+        var recyclerView = view.upload_photo_list;
+
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(activity , RecyclerView.HORIZONTAL , false)
+        var div_deco = DividerItemDecoration(recyclerView.context, DividerItemDecoration.HORIZONTAL)
+        recyclerView.addItemDecoration(div_deco)
+
+//        var space_deco = RecyclerDecoration(20)
+//        recyclerView.addItemDecoration(space_deco)
+
 
 
         view.my_image.setOnClickListener {
@@ -199,7 +226,11 @@ class WriteFormFragment : Fragment() {
                 if (requestCode == REQUEST_GALLERY_TAKE && resultCode == Activity.RESULT_OK) {
                     Log.i("패스", data?.data?.path.toString())
                     var uri = data?.data
-                    my_image.setImageURI(uri)
+                    if (uri != null) {
+                        boardPhotoList.add(uri)
+                        adapter.notifyDataSetChanged()
+                    }
+//                    my_image.setImageURI(uri)
                     var imagePath = getRealPathFormURI(uri)
                     destFile = File(imagePath)
                 }
@@ -267,6 +298,7 @@ class WriteFormFragment : Fragment() {
             Log.d("TAG", "카메라 허가 못받음 ㅠ 젠장!!")
         }
     }
+
 
 
 }

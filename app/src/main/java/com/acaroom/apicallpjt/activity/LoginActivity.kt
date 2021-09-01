@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.acaroom.apicallpjt.*
@@ -15,6 +17,7 @@ import com.royrodriguez.transitionbutton.TransitionButton
 import com.royrodriguez.transitionbutton.TransitionButton.OnAnimationStopEndListener
 import kotlinx.android.synthetic.main.activit_login.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_write_form.view.*
 import kotlinx.android.synthetic.main.main_drawer_header.*
 import kotlinx.android.synthetic.main.main_drawer_header.view.*
 import okhttp3.OkHttpClient
@@ -30,6 +33,27 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activit_login)
 
+        userId.setOnKeyListener { view, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                userPass.requestFocus()
+            }
+            true
+        }
+        userPass.setOnEditorActionListener { view, actionId, event ->
+            var handled = false
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                transition_button.performClick()
+                handled=true
+            }
+            handled
+        }
+        userPass.setOnKeyListener{ view, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                transition_button.performClick()
+            }
+            true
+
+        }
 
         transition_button.setOnClickListener {
             var id = userId.text.toString()
