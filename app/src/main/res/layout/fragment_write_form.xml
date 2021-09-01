@@ -23,7 +23,7 @@
 
 
         <Button
-            android:id="@+id/my_image"
+            android:id="@+id/my_image_btn"
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:background="@drawable/pic"/>

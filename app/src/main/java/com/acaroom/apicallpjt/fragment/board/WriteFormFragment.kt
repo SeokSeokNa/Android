@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
@@ -16,8 +17,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,7 +31,6 @@ import com.acaroom.apicallpjt.R
 import com.acaroom.apicallpjt.apiService.BoardService
 import com.acaroom.apicallpjt.dialog.ProgressDialog
 import com.acaroom.apicallpjt.recycler_view.BoardFormAdapter
-import kotlinx.android.synthetic.main.fragment_write_form.*
 import kotlinx.android.synthetic.main.fragment_write_form.view.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -49,7 +47,7 @@ class WriteFormFragment : Fragment() {
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_GALLERY_TAKE = 2
     var images = ArrayList<MultipartBody.Part>()
-    var destFile: File? = null
+    var destFiles: ArrayList<File>? = arrayListOf()
 
     lateinit var customProgressDialog: ProgressDialog
     lateinit var dialog: AlertDialog.Builder
@@ -87,16 +85,13 @@ class WriteFormFragment : Fragment() {
         var recyclerView = view.upload_photo_list;
 
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(activity , RecyclerView.HORIZONTAL , false)
+        recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
+        //아이템별 경계선 그리기
         var div_deco = DividerItemDecoration(recyclerView.context, DividerItemDecoration.HORIZONTAL)
         recyclerView.addItemDecoration(div_deco)
 
-//        var space_deco = RecyclerDecoration(20)
-//        recyclerView.addItemDecoration(space_deco)
 
-
-
-        view.my_image.setOnClickListener {
+        view.my_image_btn.setOnClickListener {
             if (checkPermission()) { //권한받았으면 카메라 실행
                 openGalleryForImage()
             } else { //권한 안받았으면 권한 요청 메세지 실행
@@ -105,13 +100,6 @@ class WriteFormFragment : Fragment() {
 
         }
 
-
-        var resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-
-                }
-            }
 
         //로딩창 객체 생성
         customProgressDialog = ProgressDialog(view.context)
@@ -146,12 +134,16 @@ class WriteFormFragment : Fragment() {
 
 
     private fun postBoard(title: String, content: String) {
-        if (destFile != null) {
-            // RequestBody로 변환
-            var requestBmp = RequestBody.create(MediaType.parse("multipart/form-data"), destFile)
-            // MultipartBody.Part로 파일 컨버전
-            var bmp = MultipartBody.Part.createFormData("files", destFile?.name, requestBmp)
-            images.add(bmp)
+        if (destFiles?.size !=0) {
+
+            for (file in destFiles!!) {
+                // RequestBody로 변환
+                var requestBmp = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+                // MultipartBody.Part로 파일 컨버전
+                var bmp = MultipartBody.Part.createFormData("files", file.name, requestBmp)
+                images.add(bmp)
+            }
+
         }
 
 
@@ -194,8 +186,8 @@ class WriteFormFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<Number>, t: Throwable) {
-                    Log.i("결과 메세지" , t.message.toString())
-                    Log.i("결과 stackTrace" , t.stackTrace.toString())
+                    Log.i("결과 메세지", t.message.toString())
+                    Log.i("결과 stackTrace", t.stackTrace.toString())
                     Log.i("실패 : ", "전송 실패!!!")
                     customProgressDialog.dismiss()
                     dialog.setPositiveButton("예", DialogInterface.OnClickListener { _, _ ->
@@ -210,9 +202,13 @@ class WriteFormFragment : Fragment() {
 
     //갤러리 열기
     private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK)
+
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_GALLERY_TAKE)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GALLERY_TAKE)
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -224,15 +220,42 @@ class WriteFormFragment : Fragment() {
             }
             2 -> {
                 if (requestCode == REQUEST_GALLERY_TAKE && resultCode == Activity.RESULT_OK) {
-                    Log.i("패스", data?.data?.path.toString())
-                    var uri = data?.data
-                    if (uri != null) {
-                        boardPhotoList.add(uri)
-                        adapter.notifyDataSetChanged()
+
+                    if (data != null) {
+                        Log.i("사진 하나만 !", data.data?.path.toString())
                     }
-//                    my_image.setImageURI(uri)
-                    var imagePath = getRealPathFormURI(uri)
-                    destFile = File(imagePath)
+
+
+                    if (data?.clipData == null) {
+                        Log.i("사진 하나만 !", data?.data?.path.toString())
+                        var uri = data?.data
+                        if (uri != null) {
+                            boardPhotoList.add(uri)
+                            adapter.notifyDataSetChanged()
+                            var imagePath = getRealPathFromURI2(uri)
+                            if (imagePath != null) {
+                                Log.i("uri결과 !", imagePath)
+                            }
+                            destFiles?.add(File(imagePath))
+                        }
+
+                    } else {
+                        Log.i("사진 여러개 !", data.clipData!!.getItemAt(0).uri.path.toString())
+                        var clipDataResult = data.clipData
+                        if (clipDataResult != null) {
+                            for (i in 0 until clipDataResult.itemCount) {
+                                var uri = clipDataResult.getItemAt(i).uri
+                                boardPhotoList.add(uri)
+                                adapter.notifyDataSetChanged()
+                                var imagePath = getRealPathFromURI2(uri)
+                                destFiles?.add(File(imagePath))
+                            }
+
+
+                        }
+
+                    }
+
                 }
             }
         }
@@ -240,7 +263,7 @@ class WriteFormFragment : Fragment() {
 
 
     //이미지 파일 절대경로 가져오기(이미지를 파일형태로 가져오기 위해 절대경로가 필요함)
-        private fun getRealPathFormURI(contentURI: Uri?): String {
+    private fun getRealPathFormURI(contentURI: Uri?): String {
         var result :String
         var cursor = activity?.contentResolver?.query(contentURI!!, null, null, null, null)
         if (cursor == null) {
@@ -254,8 +277,31 @@ class WriteFormFragment : Fragment() {
         return result
     }
 
-
-
+    //이미지 파일 절대경로 가져오기(여러 이미지를 파일형태로 가져오기 위함)
+    private fun getRealPathFromURI2(contentUri: Uri): String? {
+        if (contentUri.path!!.startsWith("/storage")) {
+            return contentUri.path
+        }
+        val id = DocumentsContract.getDocumentId(contentUri).split(":".toRegex()).toTypedArray()[1]
+        val columns = arrayOf(MediaStore.Files.FileColumns.DATA)
+        val selection = MediaStore.Files.FileColumns._ID + " = " + id
+        val cursor = activity?.contentResolver?.query(
+            MediaStore.Files.getContentUri("external"),
+            columns,
+            selection,
+            null,
+            null
+        )
+        try {
+            val columnIndex: Int = cursor!!.getColumnIndex(columns[0])
+            if (cursor.moveToFirst()) {
+                return cursor.getString(columnIndex)
+            }
+        } finally {
+            cursor!!.close()
+        }
+        return null
+    }
 
 
     //카메라 권한 요청 (카메라 접근 및 저장소 접근에 대한 요청)

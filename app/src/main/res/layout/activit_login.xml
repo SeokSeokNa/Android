@@ -30,6 +30,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
+        android:imeOptions="actionDone"
         android:background="@drawable/rounded_background"
         android:hint="@string/login_password_hint"
         android:paddingLeft="16dp"

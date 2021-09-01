@@ -1,12 +1,14 @@
 package com.acaroom.apicallpjt.activity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.acaroom.apicallpjt.*
@@ -39,16 +41,11 @@ class LoginActivity : AppCompatActivity() {
             }
             true
         }
-        userPass.setOnEditorActionListener { view, actionId, event ->
-            var handled = false
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                transition_button.performClick()
-                handled=true
-            }
-            handled
-        }
+
         userPass.setOnKeyListener{ view, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(userPass.windowToken, 0)
                 transition_button.performClick()
             }
             true
@@ -67,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
                 // Do your networking task or background work here.
                 val handler = Handler()
                 handler.postDelayed({
-                    clickLoginBtn(id,pass)
+                    clickLoginBtn(id, pass)
 
                 }, 2000)
             }
@@ -92,7 +89,11 @@ class LoginActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<LoginResDto>, response: Response<LoginResDto>) {
                     var result = response.body();
                     if (result?.status != 1) App.prefs.token = ""
-                    Toast.makeText(this@LoginActivity, "${result?.status} , ${result?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "${result?.status} , ${result?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
 
@@ -123,22 +124,30 @@ class LoginActivity : AppCompatActivity() {
                         transition_button.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND,
                             OnAnimationStopEndListener {
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                intent.putExtra("login_name",result.userAccess.userName)
+                                intent.putExtra("login_name", result.userAccess.userName)
                                 //intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                setResult(Activity.RESULT_OK , intent)
+                                setResult(Activity.RESULT_OK, intent)
                                 finish()
                             })
                     } else {
-                        Toast.makeText(this@LoginActivity, "아이디 또는 비밀번호가 틀렸습니다!", Toast.LENGTH_SHORT).show()
-                        transition_button.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null)
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "아이디 또는 비밀번호가 틀렸습니다!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        transition_button.stopAnimation(
+                            TransitionButton.StopAnimationStyle.SHAKE,
+                            null
+                        )
 
                     }
                 }
 
                 override fun onFailure(call: Call<LoginResDto>, t: Throwable) {
-                    if(t.cause==null){
+                    if (t.cause == null) {
                         Log.i("결과", "통신 실패");
-                        Toast.makeText(this@LoginActivity, "연결실패, 관리자에게 문의하세요", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity, "연결실패, 관리자에게 문의하세요", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
                         Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_SHORT).show()
 
