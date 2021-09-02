@@ -28,6 +28,7 @@ import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
 import com.acaroom.apicallpjt.MainActivity
 import com.acaroom.apicallpjt.R
+import com.acaroom.apicallpjt.activity.GalleryActivity
 import com.acaroom.apicallpjt.apiService.BoardService
 import com.acaroom.apicallpjt.dialog.ProgressDialog
 import com.acaroom.apicallpjt.recycler_view.BoardFormAdapter
@@ -93,7 +94,8 @@ class WriteFormFragment : Fragment() {
 
         view.my_image_btn.setOnClickListener {
             if (checkPermission()) { //권한받았으면 카메라 실행
-                openGalleryForImage()
+                //openGalleryForImage()
+                openImagePicker()
             } else { //권한 안받았으면 권한 요청 메세지 실행
                 requestPermission()
             }
@@ -211,6 +213,12 @@ class WriteFormFragment : Fragment() {
 
     }
 
+    //이미지피커 갤러리 열기(내가 만든거임)
+    private fun openImagePicker() {
+        var intent = Intent(context,GalleryActivity::class.java)
+        startActivityForResult(intent,REQUEST_GALLERY_TAKE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.i("코드", requestCode.toString())
@@ -222,39 +230,46 @@ class WriteFormFragment : Fragment() {
                 if (requestCode == REQUEST_GALLERY_TAKE && resultCode == Activity.RESULT_OK) {
 
                     if (data != null) {
-                        Log.i("사진 하나만 !", data.data?.path.toString())
-                    }
-
-
-                    if (data?.clipData == null) {
-                        Log.i("사진 하나만 !", data?.data?.path.toString())
-                        var uri = data?.data
-                        if (uri != null) {
+                        var result_list: java.util.ArrayList<Uri> = data.getSerializableExtra("result_pic") as java.util.ArrayList<Uri>
+                        for (uri in result_list) {
+                            Log.i("결과" , uri.toString())
                             boardPhotoList.add(uri)
                             adapter.notifyDataSetChanged()
-                            var imagePath = getRealPathFromURI2(uri)
-                            if (imagePath != null) {
-                                Log.i("uri결과 !", imagePath)
-                            }
+                            var imagePath = getRealPathFormURI(uri)
                             destFiles?.add(File(imagePath))
                         }
-
-                    } else {
-                        Log.i("사진 여러개 !", data.clipData!!.getItemAt(0).uri.path.toString())
-                        var clipDataResult = data.clipData
-                        if (clipDataResult != null) {
-                            for (i in 0 until clipDataResult.itemCount) {
-                                var uri = clipDataResult.getItemAt(i).uri
-                                boardPhotoList.add(uri)
-                                adapter.notifyDataSetChanged()
-                                var imagePath = getRealPathFromURI2(uri)
-                                destFiles?.add(File(imagePath))
-                            }
-
-
-                        }
-
                     }
+
+
+//                    if (data?.clipData == null) {
+//                        Log.i("사진 하나만 !", data?.data?.path.toString())
+//                        var uri = data?.data
+//                        if (uri != null) {
+//                            boardPhotoList.add(uri)
+//                            adapter.notifyDataSetChanged()
+//                            var imagePath = getRealPathFromURI2(uri)
+//                            if (imagePath != null) {
+//                                Log.i("uri결과 !", imagePath)
+//                            }
+//                            destFiles?.add(File(imagePath))
+//                        }
+//
+//                    } else {
+//                        Log.i("사진 여러개 !", data.clipData!!.getItemAt(0).uri.path.toString())
+//                        var clipDataResult = data.clipData
+//                        if (clipDataResult != null) {
+//                            for (i in 0 until clipDataResult.itemCount) {
+//                                var uri = clipDataResult.getItemAt(i).uri
+//                                boardPhotoList.add(uri)
+//                                adapter.notifyDataSetChanged()
+//                                var imagePath = getRealPathFromURI2(uri)
+//                                destFiles?.add(File(imagePath))
+//                            }
+//
+//
+//                        }
+//
+//                    }
 
                 }
             }
@@ -309,6 +324,7 @@ class WriteFormFragment : Fragment() {
         ActivityCompat.requestPermissions(
             activity as MainActivity, arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA
             ),
             REQUEST_IMAGE_CAPTURE
@@ -317,14 +333,11 @@ class WriteFormFragment : Fragment() {
 
     //카메라 권한 체크( 카메라 접근 및 저장소 접근에 대한 체크)
     private fun checkPermission(): Boolean {
-        return (ContextCompat.checkSelfPermission(
-            activity as MainActivity,
-            android.Manifest.permission.CAMERA
-        ) ==
-                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-            activity as MainActivity,
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED)
+        return (
+                ContextCompat.checkSelfPermission(activity as MainActivity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&  //카메라 권한
+                ContextCompat.checkSelfPermission(activity as MainActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && //저장소 읽기
+                ContextCompat.checkSelfPermission(activity as MainActivity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED //저장소 쓰기
+                )
     }
 
     //권한요청 결과
