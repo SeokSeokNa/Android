@@ -2,27 +2,40 @@ package com.acaroom.apicallpjt.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import com.acaroom.apicallpjt.R
+import com.acaroom.apicallpjt.dialog.ProgressDialog
 import com.acaroom.apicallpjt.recycler_view.GalleryAdapter
 import kotlinx.android.synthetic.main.activity_gallery.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 class GalleryActivity : AppCompatActivity() {
-
     var itemList:ArrayList<Uri> = arrayListOf()
     var clickList:ArrayList<Uri> = arrayListOf()
     val adapter = GalleryAdapter(itemList,clickList)
+
+    lateinit var customProgressDialog: ProgressDialog
+    lateinit var dialog: AlertDialog.Builder
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
+
+        //로딩창 객체 생성
+        customProgressDialog = ProgressDialog(this)
+        //로딩창 투명하게
+        customProgressDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
 
         mGalleryRecycler.adapter = adapter
 
@@ -39,11 +52,13 @@ class GalleryActivity : AppCompatActivity() {
         openImagePicker()
 
         picker_btn.setOnClickListener {
+            customProgressDialog.show()
             Log.i("result = " , clickList.toString())
             var intent = Intent()
             intent.putExtra("result_pic",clickList)
             setResult(Activity.RESULT_OK,intent)
             finish()
+            customProgressDialog.dismiss()
         }
     }
 

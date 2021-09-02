@@ -32,6 +32,8 @@ import com.acaroom.apicallpjt.activity.GalleryActivity
 import com.acaroom.apicallpjt.apiService.BoardService
 import com.acaroom.apicallpjt.dialog.ProgressDialog
 import com.acaroom.apicallpjt.recycler_view.BoardFormAdapter
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.board_holder.view.*
 import kotlinx.android.synthetic.main.fragment_write_form.view.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -93,7 +95,7 @@ class WriteFormFragment : Fragment() {
 
 
         view.my_image_btn.setOnClickListener {
-            if (checkPermission()) { //권한받았으면 카메라 실행
+            if (checkPermission()) { //권한받았으면 이미지피커 갤러리 실행
                 //openGalleryForImage()
                 openImagePicker()
             } else { //권한 안받았으면 권한 요청 메세지 실행
@@ -120,9 +122,9 @@ class WriteFormFragment : Fragment() {
                 Toast.makeText(view.context, "내용을 입력하세요", Toast.LENGTH_SHORT).show()
             } else {
 
-                customProgressDialog.show()
                 //로딩화면 일부러 보여주려고 2초 지연줫음 ...
                 handler.postDelayed({
+                    customProgressDialog.show()
                     postBoard(title, content)
                 }, 2000)
 
@@ -237,6 +239,7 @@ class WriteFormFragment : Fragment() {
                             adapter.notifyDataSetChanged()
                             var imagePath = getRealPathFormURI(uri)
                             destFiles?.add(File(imagePath))
+
                         }
                     }
 

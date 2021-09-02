@@ -18,7 +18,7 @@ class BoardViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         view.userName.text = boardDto.userName
         if(boardDto.photoList.isNotEmpty()){
             Picasso.get().load(Config.image+"${boardDto.photoList.get(0).fileName}")
-                .resize(100,100)
+                .resize(500,500)
                 .into(view.imageView)
         }
 

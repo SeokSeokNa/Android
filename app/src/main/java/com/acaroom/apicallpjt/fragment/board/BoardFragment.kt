@@ -9,7 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
 import com.acaroom.apicallpjt.MainActivity
@@ -68,8 +73,15 @@ class BoardFragment : Fragment() {
                 .commit()
 
         })
+        var activity: MainActivity
+        activity = (getActivity() as MainActivity?)!!
+
+        var recyclerView = view.mBoardRecyclerView2
         val adapter = BoardListAdapter(boardDtoList)
-        view.mBoardRecyclerView2.adapter = adapter
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = GridLayoutManager(activity,1,GridLayoutManager.VERTICAL, false)
+        var ver = DividerItemDecoration(recyclerView.context, DividerItemDecoration.VERTICAL)
+        recyclerView.addItemDecoration(ver)
 
 
         boardService.findBoardList(App.prefs.token)
