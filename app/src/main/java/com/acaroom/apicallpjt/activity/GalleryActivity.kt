@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_gallery.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class GalleryActivity  : AppCompatActivity(),OnItemClick {
+class GalleryActivity  : AppCompatActivity() {
     var itemList:ArrayList<Uri> = arrayListOf()
     var clickList:ArrayList<Uri> = arrayListOf()
     val adapter = GalleryAdapter(itemList,clickList)
@@ -116,7 +116,5 @@ class GalleryActivity  : AppCompatActivity(),OnItemClick {
         }
     }
 
-    override fun onclick(value: String) {
-        TODO("Not yet implemented")
-    }
+
 }
