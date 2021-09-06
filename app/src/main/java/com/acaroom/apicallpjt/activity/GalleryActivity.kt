@@ -1,6 +1,7 @@
 package com.acaroom.apicallpjt.activity
 
 import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_gallery.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class GalleryActivity : AppCompatActivity() {
+class GalleryActivity  : AppCompatActivity(),OnItemClick {
     var itemList:ArrayList<Uri> = arrayListOf()
     var clickList:ArrayList<Uri> = arrayListOf()
     val adapter = GalleryAdapter(itemList,clickList)
@@ -57,6 +58,14 @@ class GalleryActivity : AppCompatActivity() {
             var intent = Intent()
             intent.putExtra("result_pic",clickList)
             setResult(Activity.RESULT_OK,intent)
+            finish()
+            customProgressDialog.dismiss()
+        }
+
+        cancel_btn.setOnClickListener {
+            var intent = Intent()
+            intent.putExtra("result_pic",clickList)
+            setResult(Activity.RESULT_CANCELED,intent)
             finish()
             customProgressDialog.dismiss()
         }
@@ -105,5 +114,9 @@ class GalleryActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onclick(value: String) {
+        TODO("Not yet implemented")
     }
 }

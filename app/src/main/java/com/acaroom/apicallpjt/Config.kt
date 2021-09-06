@@ -14,7 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object Config{
     //http://seokseokna.iptime.org:8080
-    const val  url: String = "http://seokseokna.iptime.org:8080/"
+    //http:172.30.1.7:8080
+    const val  url: String = "http:172.30.1.7:8080/"
     const val image: String = url+"/images/"
 
     var api = Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build().create(
@@ -48,15 +49,16 @@ object Config{
             //모든 api 요청에 대하여 공통적으로 필요한 헤더파라미터 적용(서버에서 api요청을 받을때 토큰 검사를 하므로 토큰을 담음)
 
             val newRequest = request().newBuilder()
-                            .addHeader("Authorization",App.prefs.token.toString())
+
             var expireDate = App.prefs.expireDate
 
-            if (expireDate != null && expireDate <= System.currentTimeMillis()) { // 토큰 만료시간을 넘었으면
+            if (expireDate != null && expireDate <= System.currentTimeMillis() &&App.prefs.token !=null) { // 토큰 만료시간을 넘었으면
                 var res  = api.refresh(App.prefs.refreshToken.toString()).execute();
 
                 if(res.isSuccessful) {
                     var newToken = res.body()?.accessToken;
                     var expireDate = res.body()?.expireDate;
+                    Log.i("새로운 토큰!","${newToken}");
                     App.prefs.token = newToken
                     App.prefs.expireDate = expireDate
                 } else { //리프레시 토큰 마저 만료되었을 경우
@@ -68,6 +70,7 @@ object Config{
 
             }
 
+            newRequest.addHeader("Authorization",App.prefs.token.toString())
             proceed(newRequest.build())
         }
 

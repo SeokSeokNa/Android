@@ -120,10 +120,11 @@ class WriteFormFragment : Fragment() {
             } else {
 
                 //로딩화면 일부러 보여주려고 2초 지연줫음 ...
-                handler.postDelayed({
-                    customProgressDialog.show()
-                    postBoard(title, content)
-                }, 2000)
+                customProgressDialog.show()
+                postBoard(title, content)
+//                handler.postDelayed({
+//
+//                }, 500)
 
             }
 

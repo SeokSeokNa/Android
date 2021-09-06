@@ -3,6 +3,7 @@ package com.acaroom.apicallpjt.recycler_view
 import android.net.Uri
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.acaroom.apicallpjt.R
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.gallery_item.view.*
 
@@ -14,7 +15,12 @@ class GalleryHolder(v: View):RecyclerView.ViewHolder(v) {
 
     fun bind(item: Uri) {
         Picasso.get().load(item)
-            .resize(700,700)
+            //.resize(768,0)
+            //.fit()
+            .fit()
+            .centerCrop()
+            //.resize(700,700)
+            .error(R.drawable.ic_camera)
             .into(view.my_img)
 
 //        view.my_img.setOnClickListener{
