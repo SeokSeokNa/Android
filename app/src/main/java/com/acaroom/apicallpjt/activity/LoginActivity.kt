@@ -76,9 +76,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun checkLoginBtn() {
         //AuthInterceptor 클래스에 있는 intercept메소드를 호출
-        val okHttpClient = OkHttpClient.Builder().addInterceptor(AuthInterceptor()).build()
         var retrofit = Retrofit.Builder()
-            .client(okHttpClient)
             .baseUrl(Config.url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -117,8 +115,10 @@ class LoginActivity : AppCompatActivity() {
                     var result = response.body();
                     if (result?.status == 1) {
                         Toast.makeText(this@LoginActivity, "로그인 완료!", Toast.LENGTH_SHORT).show()
-                        App.prefs.token = result?.userAccess?.accessToken;//내부 저장소에 받아온 토큰 넣어두기
-                        App.prefs.userNm = result?.userAccess.userName;//내부 저장소에 받아온 유저이름 넣어두기
+                        App.prefs.token = result?.userAccess?.accessToken;//내부 저장소에 받아온 토큰 넣어두기(access)
+                        App.prefs.refreshToken = result?.userAccess?.refreshToken;//내부 저장소에 받아온 토큰 넣어두기(refresh)
+                        App.prefs.userNm = result?.userAccess?.userName;//내부 저장소에 받아온 유저이름 넣어두기
+                        App.prefs.expireDate = result?.userAccess?.expireDate
                         Log.i("결과", result.toString());
 
                         transition_button.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND,

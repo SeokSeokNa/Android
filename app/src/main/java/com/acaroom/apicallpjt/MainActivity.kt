@@ -58,6 +58,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //로그인이 만료되지 않았다면
         if(App.prefs.token!=null){
             nav_header.profile_name.text = App.prefs.userNm
+        } else {
+            nav_header.profile_name.text = "Guest"
         }
 
         //로그인Activity로 부터 넘어온 결과 받기

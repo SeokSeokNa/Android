@@ -57,10 +57,7 @@ class WriteFormFragment : Fragment() {
     var handler = Handler()
     var boardPhotoList : ArrayList<Uri> = arrayListOf()
     val adapter = BoardFormAdapter(boardPhotoList)
-    var retrofit = Retrofit.Builder()
-        .baseUrl(Config.url)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    var retrofit = Config.getApiClient()
 
 
     var boardService = retrofit.create(BoardService::class.java)
@@ -162,7 +159,7 @@ class WriteFormFragment : Fragment() {
         map.put("title", title_result)
         map.put("content", content_result)
 
-        boardService.postBoard2(App.prefs.token, map, images)
+        boardService.postBoard2(map, images)
             .enqueue(object : Callback<Number> {
                 override fun onResponse(call: Call<Number>, response: Response<Number>) {
 

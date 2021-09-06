@@ -10,18 +10,15 @@ import retrofit2.http.*
 interface BoardService {
 
     @GET("api/v1/board/list")
-    fun findBoardList(@Header(value = "Authorization") token : String?): Call<List<BoardDto>>
+    fun findBoardList(): Call<List<BoardDto>>
 
     @POST("api/v1/board/new")
-    fun postBoard(@Header(value = "Authorization") token : String?,
-                  @Body boardForm: BoardFormDto
-    ):Call<Number>
+    fun postBoard(@Body boardForm: BoardFormDto):Call<Number>
 
 
     @Multipart
     @POST("api/v1/board/new")
-    fun postBoard2(@Header(value = "Authorization") token : String?,
-                   @PartMap() partMap:HashMap<String,RequestBody>,
+    fun postBoard2(@PartMap() partMap:HashMap<String,RequestBody>,
                    @Part imgFile : ArrayList<MultipartBody.Part>,
     ):Call<Number>
 }

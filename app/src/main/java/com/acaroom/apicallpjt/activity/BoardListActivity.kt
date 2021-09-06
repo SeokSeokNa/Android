@@ -48,7 +48,7 @@ class BoardListActivity : AppCompatActivity() {
         })
 
 
-        boardService.findBoardList(App.prefs.token)
+        boardService.findBoardList()
             .enqueue(object :Callback<List<BoardDto>>{
                 override fun onResponse(call: Call<List<BoardDto>>, response: Response<List<BoardDto>>) {
 

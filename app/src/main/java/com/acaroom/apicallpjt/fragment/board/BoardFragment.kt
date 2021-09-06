@@ -2,6 +2,7 @@ package com.acaroom.apicallpjt.fragment.board
 
 import android.animation.ObjectAnimator
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
 import com.acaroom.apicallpjt.MainActivity
 import com.acaroom.apicallpjt.R
+import com.acaroom.apicallpjt.activity.LoginActivity
 import com.acaroom.apicallpjt.apiService.BoardService
 import com.acaroom.apicallpjt.data_domain.BoardDto
 import com.acaroom.apicallpjt.recycler_view.BoardListAdapter
@@ -30,21 +32,20 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.log
 
 
 class BoardFragment : Fragment() {
     private var isFabOpen = false
     val boardDtoList : ArrayList<BoardDto> = arrayListOf<BoardDto>()
-    var retrofit = Retrofit.Builder()
-        .baseUrl(Config.url)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
+    var retrofit = Config.getApiClient()
 
     var boardService = retrofit.create(BoardService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
 
     }
 
@@ -65,6 +66,7 @@ class BoardFragment : Fragment() {
         }
 
 
+
         var dialog = AlertDialog.Builder(view.context)
         dialog.setTitle("오류")
         dialog.setPositiveButton("예", DialogInterface.OnClickListener() { _, _ ->
@@ -72,6 +74,8 @@ class BoardFragment : Fragment() {
                 .remove(this)
                 .commit()
 
+            var intent = Intent(activity , LoginActivity::class.java)
+            startActivity(intent)
         })
         var activity: MainActivity
         activity = (getActivity() as MainActivity?)!!
@@ -84,7 +88,7 @@ class BoardFragment : Fragment() {
         recyclerView.addItemDecoration(ver)
 
 
-        boardService.findBoardList(App.prefs.token)
+        boardService.findBoardList()
             .enqueue(object : Callback<List<BoardDto>> {
                 override fun onResponse(
                     call: Call<List<BoardDto>>,
@@ -94,6 +98,7 @@ class BoardFragment : Fragment() {
                     if (response.isSuccessful) {
                         var result = response.body();
                         if (result != null) {
+
                             for (i in result.indices) {
                                 var board = result[i]
                                 boardDtoList.add(board)
@@ -106,7 +111,7 @@ class BoardFragment : Fragment() {
                     } else {//익셉션으로 인한 500 에러일 경우
                         val jsonObj = JSONObject(response.errorBody()!!.charStream().readText())
                         dialog.setMessage(" ${jsonObj.getString("message")}").create().show()
-
+                        App.prefs.removeInfo()
                     }
 
 
