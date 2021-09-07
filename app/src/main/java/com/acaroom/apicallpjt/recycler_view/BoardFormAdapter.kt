@@ -1,13 +1,10 @@
 package com.acaroom.apicallpjt.recycler_view
 
 import android.net.Uri
-import android.system.Os.bind
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.acaroom.apicallpjt.R
-import java.io.File
 
 class BoardFormAdapter(val boardPhotoList: ArrayList<Uri>) :RecyclerView.Adapter<BoardFormPhotoHolder>() {
 

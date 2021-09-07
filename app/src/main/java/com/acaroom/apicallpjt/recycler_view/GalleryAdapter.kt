@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.acaroom.apicallpjt.R
 import kotlinx.android.synthetic.main.activity_gallery.*
-import kotlinx.android.synthetic.main.gallery_item.view.*
+import kotlinx.android.synthetic.main.gallery_photo_item.view.*
 
 
 class GalleryAdapter(
@@ -21,7 +21,7 @@ class GalleryAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryHolder {
         (parent.context as Activity).pic_count.text = "${boardList.size+clickList.size}"+"/10"
         val inflatedView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.gallery_item, parent, false)//화면을 가져옴
+            .inflate(R.layout.gallery_photo_item, parent, false)//화면을 가져옴
         return GalleryHolder(inflatedView)
     }
 

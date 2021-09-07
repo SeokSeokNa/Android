@@ -7,15 +7,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
 import com.acaroom.apicallpjt.MainActivity
 import com.acaroom.apicallpjt.R
-import com.acaroom.apicallpjt.recycler_view.BoardListAdapter
-import com.acaroom.apicallpjt.data_domain.BoardDto
 import com.acaroom.apicallpjt.apiService.BoardService
+import com.acaroom.apicallpjt.data_domain.BoardDto
+import com.acaroom.apicallpjt.recycler_view.BoardListAdapter
 import kotlinx.android.synthetic.main.activity_board_list.*
-import kotlinx.android.synthetic.main.activity_list.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback

@@ -21,6 +21,15 @@
         >
 
         <TextView
+            android:id="@+id/board_id"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            >
+
+        </TextView>
+
+        <TextView
             android:id="@+id/mTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

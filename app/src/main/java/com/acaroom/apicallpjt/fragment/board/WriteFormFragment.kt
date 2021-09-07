@@ -2,6 +2,7 @@ package com.acaroom.apicallpjt.fragment.board
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -46,7 +47,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 
-class WriteFormFragment : Fragment() {
+class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_GALLERY_TAKE = 2
     var images = ArrayList<MultipartBody.Part>()
@@ -358,6 +359,18 @@ class WriteFormFragment : Fragment() {
         } else {
             Log.d("TAG", "카메라 허가 못받음 ㅠ 젠장!!")
         }
+    }
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (context as MainActivity).setOnKeyBackPressedListener(this)
+    }
+
+    override fun onBackKey() {
+        val activity: MainActivity? = activity as MainActivity?
+        activity?.setOnKeyBackPressedListener(null);
+        activity?.onBackPressed()
     }
 
 

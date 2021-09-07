@@ -5,7 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.acaroom.apicallpjt.R
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.gallery_item.view.*
+import kotlinx.android.synthetic.main.gallery_photo_item.view.*
 
 class GalleryHolder(v: View):RecyclerView.ViewHolder(v) {
 

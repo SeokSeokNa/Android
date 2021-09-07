@@ -13,12 +13,19 @@ interface BoardService {
     fun findBoardList(): Call<List<BoardDto>>
 
     @POST("api/v1/board/new")
-    fun postBoard(@Body boardForm: BoardFormDto):Call<Number>
+    fun postBoard(@Body boardForm: BoardFormDto): Call<Number>
 
 
     @Multipart
     @POST("api/v1/board/new")
-    fun postBoard2(@PartMap() partMap:HashMap<String,RequestBody>,
-                   @Part imgFile : ArrayList<MultipartBody.Part>,
-    ):Call<Number>
+    fun postBoard2(
+        @PartMap() partMap: HashMap<String, RequestBody>,
+        @Part imgFile: ArrayList<MultipartBody.Part>,
+    ): Call<Number>
+
+    @GET("api/v1/boardDetail/{id}") //id는 boardNo
+    fun findBoardDetail(@Path("id") id: Int): Call<BoardDto>
+
+    @DELETE("api/v1/boardDelete/{id}")
+    fun deleteBoard(@Path("id") id:Int):Call<Long>
 }

@@ -12,6 +12,7 @@ class BoardViewHolder(v: View) : RecyclerView.ViewHolder(v) {
 
     //데이터를 그려놓은 화면에 바인드 시키는것
     fun bind(boardDto: BoardDto) {
+        view.board_id.text = boardDto.id
         view.mTitle.text = boardDto.title
         view.mContents.text = boardDto.contents
         view.mWriteDate.text = boardDto.writeDate
