@@ -15,6 +15,8 @@ class BoardFormPhotoHolder(v:View)  : RecyclerView.ViewHolder(v) {
     fun bind(uri: Uri) {
         Picasso.get().load(uri)
             .resize(500,500)
+            //.fit()
+            .centerCrop()
             .into(view.upload_photo)
         //view.upload_photo.setImageURI(uri)
     }

@@ -13,9 +13,13 @@ import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.gallery_item.view.*
 
 
-class GalleryAdapter(val itemList: ArrayList<Uri>, val clickList: ArrayList<Uri>) : RecyclerView.Adapter<GalleryHolder>() {
+class GalleryAdapter(
+    val itemList: ArrayList<Uri>,
+    val clickList: ArrayList<Uri>,
+    val boardList: ArrayList<Uri>
+) : RecyclerView.Adapter<GalleryHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryHolder {
-
+        (parent.context as Activity).pic_count.text = "${boardList.size+clickList.size}"+"/10"
         val inflatedView = LayoutInflater.from(parent.context)
             .inflate(R.layout.gallery_item, parent, false)//화면을 가져옴
         return GalleryHolder(inflatedView)
@@ -52,14 +56,14 @@ class GalleryAdapter(val itemList: ArrayList<Uri>, val clickList: ArrayList<Uri>
     private fun clickEvent(
         holder: GalleryHolder,
         context: View,
-        item: Uri
-    ) {
+        item: Uri,
 
+    ) {
         ContextCompat.getDrawable(holder.view.context, R.drawable.ic_check_box_none)
         val check = ContextCompat.getDrawable(holder.view.context, R.drawable.ic_check)
         val none = ContextCompat.getDrawable(holder.view.context, R.drawable.ic_check_box_none)
         if (context.my_check.isChecked) {
-            if (clickList.size == 10) return //10개 까지만 선택 가능하도록 변경
+            if (boardList.size+clickList.size == 10) return //10개 까지만 선택 가능하도록 변경
 
             context.my_check.background = check
             clickList.add(item)
@@ -67,10 +71,10 @@ class GalleryAdapter(val itemList: ArrayList<Uri>, val clickList: ArrayList<Uri>
             context.my_check.background = none
             clickList.remove(item)
         }
-        Log.i("크기", "${clickList.size}")
+        Log.i("크기", "${boardList.size}")
 
 
-        (context.context as Activity).pic_count.text = "${clickList.size}"+"/10"
+        (context.context as Activity).pic_count.text = "${boardList.size+clickList.size}"+"/10"
     }
 
     override fun getItemCount(): Int {

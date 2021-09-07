@@ -1,10 +1,7 @@
 package com.acaroom.apicallpjt.activity
 
 import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,9 +18,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class GalleryActivity  : AppCompatActivity() {
-    var itemList:ArrayList<Uri> = arrayListOf()
-    var clickList:ArrayList<Uri> = arrayListOf()
-    val adapter = GalleryAdapter(itemList,clickList)
+
 
     lateinit var customProgressDialog: ProgressDialog
     lateinit var dialog: AlertDialog.Builder
@@ -31,14 +26,16 @@ class GalleryActivity  : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
+        var itemList:ArrayList<Uri> = arrayListOf()
+        var clickList:ArrayList<Uri> = arrayListOf()
+        var boardList = intent.getSerializableExtra("size") as ArrayList<Uri>
+        Log.i("test","${boardList.size}")
 
-        //로딩창 객체 생성
-        customProgressDialog = ProgressDialog(this)
-        //로딩창 투명하게
-        customProgressDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val adapter = GalleryAdapter(itemList,clickList , boardList)
 
 
         mGalleryRecycler.adapter = adapter
+
 
         val gridLayoutManager = GridLayoutManager(this,3 , GridLayoutManager.VERTICAL , false) //spanCount는 열수
         mGalleryRecycler.layoutManager = gridLayoutManager
@@ -50,16 +47,14 @@ class GalleryActivity  : AppCompatActivity() {
         mGalleryRecycler.addItemDecoration(hor)
         mGalleryRecycler.addItemDecoration(ver)
 
-        openImagePicker()
+        openImagePicker(itemList , adapter)
 
         picker_btn.setOnClickListener {
-            customProgressDialog.show()
             Log.i("result = " , clickList.toString())
             var intent = Intent()
             intent.putExtra("result_pic",clickList)
             setResult(Activity.RESULT_OK,intent)
             finish()
-            customProgressDialog.dismiss()
         }
 
         cancel_btn.setOnClickListener {
@@ -67,12 +62,11 @@ class GalleryActivity  : AppCompatActivity() {
             intent.putExtra("result_pic",clickList)
             setResult(Activity.RESULT_CANCELED,intent)
             finish()
-            customProgressDialog.dismiss()
         }
     }
 
 
-    private fun openImagePicker() {
+    private fun openImagePicker(itemList: ArrayList<Uri>, adapter: GalleryAdapter) {
         val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
         val projection = arrayOf(

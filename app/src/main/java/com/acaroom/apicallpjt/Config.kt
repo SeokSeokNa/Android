@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object Config{
     //http://seokseokna.iptime.org:8080
     //http:172.30.1.7:8080
-    const val  url: String = "http:172.30.1.7:8080/"
+    const val  url: String = "http://seokseokna.iptime.org:8080/"
     const val image: String = url+"/images/"
 
     var api = Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build().create(
@@ -62,6 +62,7 @@ object Config{
                     App.prefs.token = newToken
                     App.prefs.expireDate = expireDate
                 } else { //리프레시 토큰 마저 만료되었을 경우
+                    App.prefs.removeInfo()
                     val jsonObj = JSONObject(res.errorBody()!!.charStream().readText())
                     Log.i("에러!","${jsonObj.getString("message")}");
                     newRequest.addHeader("refreshToken",App.prefs.refreshToken.toString()) //에러처리를 fragment나 액티비티에 retrofit에서 해야되서 헤더 추가 후 서버에서

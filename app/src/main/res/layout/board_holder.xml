@@ -3,19 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
         android:src="@drawable/ic_launcher_background" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="1"
+        >
 
         <TextView
             android:id="@+id/mTitle"
@@ -24,28 +27,33 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="3dp"
             android:text="title"
-            android:textSize="18dp"/>
+            android:textSize="20dp"/>
 
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            >
 
             <TextView
                 android:id="@+id/mContents"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="3dp"
                 android:text="content"
-                android:textSize="10dp"/>
+                android:textSize="15dp"
+
+                />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/userName"

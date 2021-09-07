@@ -215,7 +215,8 @@ class WriteFormFragment : Fragment() {
 
     //이미지피커 갤러리 열기(내가 만든거임)
     private fun openImagePicker() {
-        var intent = Intent(context,GalleryActivity::class.java)
+        var intent = Intent(activity,GalleryActivity::class.java)
+        intent.putExtra("size",boardPhotoList)
         startActivityForResult(intent,REQUEST_GALLERY_TAKE)
     }
 

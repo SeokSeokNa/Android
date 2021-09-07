@@ -111,7 +111,7 @@ class BoardFragment : Fragment() {
                     } else {//익셉션으로 인한 500 에러일 경우
                         val jsonObj = JSONObject(response.errorBody()!!.charStream().readText())
                         dialog.setMessage(" ${jsonObj.getString("message")}").create().show()
-                        App.prefs.removeInfo()
+                        //App.prefs.removeInfo()
                     }
 
 
