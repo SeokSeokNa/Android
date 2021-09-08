@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.acaroom.apicallpjt.MainActivity
 import com.acaroom.apicallpjt.R
@@ -29,12 +30,14 @@ class BoardListAdapter(val boardDtoList : ArrayList<BoardDto>) : RecyclerView.Ad
     override fun onBindViewHolder(holder: BoardViewHolder, position: Int) {
         val item = boardDtoList[position]
         holder.itemView.setOnClickListener {
-            val boardFragment = BoardDetailFragment()
+            val boardDetailFragment = BoardDetailFragment()
             val bundle = Bundle(1)
             bundle.putInt("id",Integer.parseInt(item.id))
-            boardFragment.arguments = bundle
+            bundle.putString("userId",item.userId)
+            boardDetailFragment.arguments = bundle
             (holder.view.context as FragmentActivity).supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment , boardFragment).addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN) //프레그먼트 열릴때 애니메이션 효과
+                .replace(R.id.fragment , boardDetailFragment).addToBackStack("boardDetail")
                 .commit()
 
             //Toast.makeText(holder.view.context , "${item.id}" , Toast.LENGTH_SHORT).show()

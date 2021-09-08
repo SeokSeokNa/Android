@@ -118,6 +118,7 @@ class LoginActivity : AppCompatActivity() {
                         App.prefs.token = result?.userAccess?.accessToken;//내부 저장소에 받아온 토큰 넣어두기(access)
                         App.prefs.refreshToken = result?.userAccess?.refreshToken;//내부 저장소에 받아온 토큰 넣어두기(refresh)
                         App.prefs.userNm = result?.userAccess?.userName;//내부 저장소에 받아온 유저이름 넣어두기
+                        App.prefs.userId = result?.userAccess?.userId;//내부 저장소에 받아온 유저아이디 넣어두기(글 수정,삭제 권한을 서버 거치지않고 먼저 판단하기위해)
                         App.prefs.expireDate = result?.userAccess?.expireDate
                         Log.i("결과", result.toString());
 

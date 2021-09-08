@@ -27,12 +27,17 @@ class Prefs(context: Context) {
     get() = prefs.getString("userNm", null)
     set(value) = prefs.edit().putString("userNm", value).apply()
 
+    var userId:String?
+        get() = prefs.getString("userId", null)
+        set(value) = prefs.edit().putString("userId", value).apply()
+
 
     fun removeInfo() {
         token = null
         //refreshToken = null
         expireDate = 0L
         userNm = null
+        userId = null
     }
 
 }

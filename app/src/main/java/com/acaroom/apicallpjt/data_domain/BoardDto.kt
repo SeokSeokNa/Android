@@ -6,4 +6,5 @@ data class BoardDto(val id:String,
                     val writeDate:String,
                     val hit:String,
                     val userName:String,
+                    val userId:String,
                     val photoList:List<PhotoDto>)

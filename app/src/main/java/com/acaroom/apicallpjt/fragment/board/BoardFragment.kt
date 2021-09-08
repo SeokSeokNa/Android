@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -63,8 +64,9 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
             var activity :MainActivity
             activity = (getActivity() as MainActivity?)!!
             activity.supportFragmentManager.beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN) //프레그먼트 열릴때 애니메이션 효과
                 .replace(R.id.fragment, WriteFormFragment())
-                .addToBackStack(null)
+                .addToBackStack("boardForm")
                 .commit()
         }
 
@@ -165,4 +167,5 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         activity?.setOnKeyBackPressedListener(null);
         activity?.onBackPressed()
     }
+
 }

@@ -22,6 +22,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -175,8 +176,10 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
                                 DialogInterface.OnClickListener { _, _ ->
                                     customProgressDialog.dismiss()
                                     var activity = (getActivity() as MainActivity?)!!
+                                    activity.supportFragmentManager.popBackStack("boardList" , FragmentManager.POP_BACK_STACK_INCLUSIVE)
                                     activity.supportFragmentManager.beginTransaction()
                                         .replace(R.id.fragment, BoardFragment())
+                                        .addToBackStack(null)
                                         .commit()
                                 })
 

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.animation.TranslateAnimation
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentTransaction
 import com.acaroom.apicallpjt.activity.*
 import com.acaroom.apicallpjt.fragment.board.BoardFragment
 import com.google.android.material.navigation.NavigationView
@@ -110,6 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.member -> {
                 supportFragmentManager.beginTransaction()
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN) //프레그먼트 열릴때 애니메이션 효과
                     .replace(R.id.fragment, BoardFragment())
                     .commit()
 //                val intent = Intent(this, MemberListActivity::class.java)
@@ -117,7 +120,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.board -> {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment, BoardFragment()).addToBackStack(null)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN) //프레그먼트 열릴때 애니메이션 효과
+                    .replace(R.id.fragment, BoardFragment())
+                    .addToBackStack("boardList")
                     .commit()
 //                val intent = Intent(this, BoardListActivity::class.java)
 //                startActivity(intent)
@@ -146,9 +151,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             if (mOnKeyBackPressedListener != null) {
                 mOnKeyBackPressedListener?.onBackKey()
-                Log.i("리스너","여기!!")
             } else {
-                super.onBackPressed() //열려있지 않다면 기존 뒤로가기 버튼이 동작한다.
+                //프레그먼트가 없고 메인페이지라면 종료알림창 띄우기
+               if(supportFragmentManager.backStackEntryCount == 0) {
+                    var dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+                    dialog.setTitle("알림")
+                    dialog.setMessage("종료하시겠습니까?")
+                    dialog.setPositiveButton("예" ,DialogInterface.OnClickListener(){_,_->
+                        super.onBackPressed() //열려있지 않다면 기존 뒤로가기 버튼이 동작한다.
+                    })
+                    dialog.setNegativeButton("아니요" , DialogInterface.OnClickListener(){_,_->})
+                    dialog.show()
+               } else {
+                    super.onBackPressed() //열려있지 않다면 기존 뒤로가기 버튼이 동작한다.
+               }
+
+
+
             }
 
         }

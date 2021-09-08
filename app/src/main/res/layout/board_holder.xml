@@ -25,9 +25,15 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone"
-            >
+            />
 
-        </TextView>
+        <TextView
+            android:id="@+id/user_id"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            />
+
 
         <TextView
             android:id="@+id/mTitle"
