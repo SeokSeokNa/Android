@@ -28,6 +28,18 @@
         app:layout_constraintStart_toStartOf="@id/fabMain"
         app:layout_constraintEnd_toEndOf="@id/fabMain"/>
 
+    <TextView
+        android:id="@+id/fabWrite_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:visibility="invisible"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="@id/fabMain"
+        app:layout_constraintBottom_toBottomOf="@id/fabMain"
+        app:layout_constraintStart_toStartOf="@id/fabMain"
+        app:layout_constraintEnd_toEndOf="@id/fabMain"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabCamera"
         android:layout_width="wrap_content"
@@ -40,6 +52,7 @@
         app:layout_constraintBottom_toBottomOf="@id/fabMain"
         app:layout_constraintStart_toStartOf="@id/fabMain"
         app:layout_constraintEnd_toEndOf="@id/fabMain"/>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabMain"

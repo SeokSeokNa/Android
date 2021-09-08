@@ -42,8 +42,6 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("상태","${savedInstanceState}")
-
 
     }
 
@@ -51,7 +49,6 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.i("상태","${savedInstanceState}")
         val view = inflater.inflate(R.layout.fragment_board, container, false)
 
         adapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
@@ -139,17 +136,34 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
 
     /*플로팅 버튼 애니메이션 효과 처리 및 토글 적용*/
     private fun toggleFab() {
-        Toast.makeText(context, "메인 플로팅 버튼 클릭: $isFabOpen", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "메인 플로팅 버튼 클릭: $isFabOpen", Toast.LENGTH_SHORT).show()
 
         // 플로팅 액션 버튼 닫기 - 열려있는 플로팅 버튼 집어넣는 애니메이션 세팅
         if(isFabOpen) {
             ObjectAnimator.ofFloat(fabWrite, "translationY", 0f).apply { start() }
             ObjectAnimator.ofFloat(fabCamera, "translationY", 0f).apply { start() }
+            ObjectAnimator.ofFloat(fabWrite_text, "translationY", 0f).apply { start() }
+            ObjectAnimator.ofFloat(fabWrite_text, "translationX", 0f).apply { start()
+
+                fabWrite_text.apply {
+                    text=""
+                    visibility=View.INVISIBLE
+                }
+            }
             fabMain.setImageResource(R.drawable.ic_add)
         } else {
             // 플로팅 액션 버튼 열기 - 닫혀있는 플로팅 버튼 꺼내는 애니메이션 세팅
             ObjectAnimator.ofFloat(fabWrite, "translationY", -200f).apply { start() }
             ObjectAnimator.ofFloat(fabCamera, "translationY", -400f).apply { start() }
+            ObjectAnimator.ofFloat(fabWrite_text, "translationY", -200f).apply { start()}
+            ObjectAnimator.ofFloat(fabWrite_text, "translationX", -150f).apply { start()
+                end()
+                fabWrite_text.apply {
+                    text="글쓰기";
+                    visibility=View.VISIBLE
+                }
+            }
+
             fabMain.setImageResource(R.drawable.ic_clear)
         }
         isFabOpen = !isFabOpen

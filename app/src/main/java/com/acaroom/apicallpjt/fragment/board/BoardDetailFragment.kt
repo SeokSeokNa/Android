@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.GridLayoutManager
 import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
@@ -20,13 +21,14 @@ import com.acaroom.apicallpjt.apiService.BoardService
 import com.acaroom.apicallpjt.data_domain.BoardDto
 import com.acaroom.apicallpjt.data_domain.PhotoDto
 import com.acaroom.apicallpjt.recycler_view.BoardDetailApdapter
+import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_board.fabMain
-import kotlinx.android.synthetic.main.fragment_board.fabWrite
 import kotlinx.android.synthetic.main.fragment_board_detail.*
 import kotlinx.android.synthetic.main.fragment_board_detail.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
     private var isFabOpen = false
@@ -45,8 +47,8 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
     ): View? {
         val view = inflater.inflate(R.layout.fragment_board_detail, container, false)
         var dialog = androidx.appcompat.app.AlertDialog.Builder(view.context)
+        isFabOpen = false
         dialog.setTitle("알림")
-
 
         val id = arguments?.getInt("id")!!
         val userId = arguments?.getString("userId")!!
@@ -63,7 +65,12 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
         val adapter = BoardDetailApdapter(photoList)
         recycleView.adapter = adapter
 
-        recycleView.layoutManager = GridLayoutManager(activity , 3 , GridLayoutManager.VERTICAL , false)
+        recycleView.layoutManager = GridLayoutManager(
+            activity,
+            3,
+            GridLayoutManager.VERTICAL,
+            false
+        )
 //        var ver = DividerItemDecoration(recycleView.context, DividerItemDecoration.VERTICAL)
 //        var hor = DividerItemDecoration(recycleView.context, DividerItemDecoration.HORIZONTAL) //세로줄
 //
@@ -75,15 +82,23 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
         view.fabMain.setOnClickListener{
             toggleFab()
         }
+        view.fabModify.setOnClickListener {
+            modifyBoard(id, userId)
+        }
+
+
         view.fabRemove.setOnClickListener {
-            Log.i("클릭","!!")
+            Log.i("클릭", "!!")
             dialog.setMessage("삭제 하시겠습니까?")
             dialog.setPositiveButton("예", DialogInterface.OnClickListener() { _, _ ->
                 deleteBoard(id)
             })
-            dialog.setNegativeButton("아니요" , DialogInterface.OnClickListener() {_,_->})
+            dialog.setNegativeButton("아니요", DialogInterface.OnClickListener() { _, _ -> })
+            dialog.setCancelable(false)
             dialog.show()
         }
+
+
 
         boardService.findBoardDetail(id)
             .enqueue(object : Callback<BoardDto> {
@@ -94,10 +109,15 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
                             view.board_title.text = result.title
                             view.board_content.text = result.contents
                             var result_photo_list = result.photoList;
-                            for (i in result_photo_list.indices) {
-                                photoList.add(result_photo_list[i])
-                                adapter.notifyDataSetChanged()
+                            if (photoList.size > 0) {
+                                isFabOpen = false
+                            } else {
+                                for (i in result_photo_list.indices) {
+                                    photoList.add(result_photo_list[i])
+                                    adapter.notifyDataSetChanged()
+                                }
                             }
+
 
                         }
                     }
@@ -114,6 +134,8 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
         return view
     }
 
+
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (context as MainActivity).setOnKeyBackPressedListener(this)
@@ -126,26 +148,46 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
     }
 
 
+    private fun modifyBoard(id: Int, userId: String) {
+        val boardModifyFragment = BoardModifyFragment()
+        val bundle = Bundle()
+        bundle.putInt("id", id)
+        bundle.putString("userId", userId)
+        bundle.putString("title", view?.board_title?.text.toString())
+        bundle.putString("content", view?.board_content?.text.toString())
+        bundle.putSerializable("photo_list", photoList);
+        boardModifyFragment.arguments = bundle
+
+        //activity?.supportFragmentManager?.popBackStack("boardDetail" , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        activity?.supportFragmentManager?.beginTransaction()
+            ?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN) //프레그먼트 열릴때 애니메이션 효과
+            ?.replace(R.id.fragment, boardModifyFragment)
+            ?.addToBackStack("boardModify")
+            ?.commit()
+    }
+
+
     private fun deleteBoard(id: Int) {
         boardService.deleteBoard(id)
-            .enqueue(object :Callback<Long>{
+            .enqueue(object : Callback<Long> {
                 override fun onResponse(call: Call<Long>, response: Response<Long>) {
                     if (response.isSuccessful) {
                         val result = response.body()
                         if (result != null) {
-                            Toast.makeText(context,"성공적으로 지웠음!" , Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "삭제 되었습니다!!", Toast.LENGTH_SHORT).show()
                             var activity = (activity as MainActivity?)!!
-                            activity.supportFragmentManager.popBackStack("boardList" , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                            activity.supportFragmentManager.popBackStack("boardList", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                            activity.supportFragmentManager.popBackStack("boardDetail", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                             activity.supportFragmentManager.beginTransaction()
                                 .replace(R.id.fragment, BoardFragment())
-                                .addToBackStack(null)
+                                .addToBackStack("boardList")
                                 .commit()
                         }
                     }
                 }
 
                 override fun onFailure(call: Call<Long>, t: Throwable) {
-                    Toast.makeText(context,"실패!!!" , Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "실패!!!", Toast.LENGTH_SHORT).show()
                 }
 
             })
@@ -153,17 +195,40 @@ class BoardDetailFragment : Fragment()  , MainActivity.onKeyBackPressedListener{
 
     /*플로팅 버튼 애니메이션 효과 처리 및 토글 적용*/
     private fun toggleFab() {
-        Toast.makeText(context, "메인 플로팅 버튼 클릭: $isFabOpen", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, "메인 플로팅 버튼 클릭: $isFabOpen", Toast.LENGTH_SHORT).show()
 
         // 플로팅 액션 버튼 닫기 - 열려있는 플로팅 버튼 집어넣는 애니메이션 세팅
         if(isFabOpen) {
             ObjectAnimator.ofFloat(fabModify, "translationY", 0f).apply { start() }
             ObjectAnimator.ofFloat(fabRemove, "translationY", 0f).apply { start() }
+
+            ObjectAnimator.ofFloat(fabModify_text, "translationY", 0f).apply { start()}
+            ObjectAnimator.ofFloat(fabModify_text, "translationX", 0f).apply { start();end();fabModify_text.apply { text="";visibility=View.INVISIBLE } }
+            ObjectAnimator.ofFloat(fabRemove_text, "translationY", 0f).apply { start()}
+            ObjectAnimator.ofFloat(fabRemove_text, "translationX", 0f).apply { start();end();fabRemove_text.apply { text="";visibility=View.INVISIBLE } }
             fabMain.setImageResource(R.drawable.ic_add)
         } else {
             // 플로팅 액션 버튼 열기 - 닫혀있는 플로팅 버튼 꺼내는 애니메이션 세팅
             ObjectAnimator.ofFloat(fabModify, "translationY", -200f).apply { start() }
             ObjectAnimator.ofFloat(fabRemove, "translationY", -400f).apply { start() }
+            ObjectAnimator.ofFloat(fabModify_text, "translationY", -200f).apply { start()}
+            ObjectAnimator.ofFloat(fabModify_text, "translationX", -150f).apply { start()
+                end()
+                fabModify_text.apply {
+                    text="수정";
+                    visibility=View.VISIBLE
+                }
+            }
+
+            ObjectAnimator.ofFloat(fabRemove_text, "translationY", -400f).apply { start()}
+            ObjectAnimator.ofFloat(fabRemove_text, "translationX", -150f).apply { start()
+                end()
+                fabRemove_text.apply {
+                    text="삭제";
+                    visibility=View.VISIBLE
+                }
+            }
+
             fabMain.setImageResource(R.drawable.ic_clear)
         }
         isFabOpen = !isFabOpen

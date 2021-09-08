@@ -26,6 +26,14 @@ interface BoardService {
     @GET("api/v1/boardDetail/{id}") //id는 boardNo
     fun findBoardDetail(@Path("id") id: Int): Call<BoardDto>
 
+    @Multipart
+    @PUT("api/v1/boardModify/{id}") //id는 boardNo
+    fun modifyBoard(
+        @Path("id") id:Int,
+        @PartMap() partMap: HashMap<String, RequestBody>,
+        @Part imgFile: ArrayList<MultipartBody.Part>
+    ): Call<Long>
+
     @DELETE("api/v1/boardDelete/{id}")
     fun deleteBoard(@Path("id") id:Int):Call<Long>
 }

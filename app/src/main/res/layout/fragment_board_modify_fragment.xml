@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.board.BoardModifyFragment">
+
+
+    <!--사진 부분 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary">
+        <!--        <ImageView-->
+        <!--            android:id="@+id/my_image"-->
+        <!--            android:layout_width="80dp"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:src="@drawable/pic" />-->
+
+
+        <Button
+            android:id="@+id/my_image_btn"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/pic"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/upload_photo_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+
+            android:background="@drawable/round_border"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constrainedHeight="true"/>
+
+
+        <!--<RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </RelativeLayout>-->
+
+    </LinearLayout>
+
+
+    <!--제목 , 내용 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="0.3">
+
+
+        <EditText
+            android:id="@+id/board_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="70"
+            android:layout_gravity="bottom"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:hint="제목을 입력하세요!"/>
+
+
+        <EditText
+            android:id="@+id/board_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:gravity="center"
+            android:hint="내용을 입력하세요!"
+            android:inputType="textMultiLine" />
+
+    </LinearLayout>
+
+
+    <!--버튼 부분-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+
+        <com.royrodriguez.transitionbutton.TransitionButton
+            android:id="@+id/modify_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="수정"
+            android:textColor="@android:color/white"
+            app:defaultColor="@color/colorPrimary" />
+
+        <com.royrodriguez.transitionbutton.TransitionButton
+            android:id="@+id/cancel_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="취소"
+            android:textColor="@android:color/white"
+            app:defaultColor="@color/colorPrimary" />
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+</LinearLayout>

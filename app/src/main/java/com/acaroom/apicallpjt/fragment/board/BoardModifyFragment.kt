@@ -6,14 +6,13 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,29 +25,25 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.acaroom.apicallpjt.App
 import com.acaroom.apicallpjt.Config
 import com.acaroom.apicallpjt.MainActivity
 import com.acaroom.apicallpjt.R
 import com.acaroom.apicallpjt.activity.GalleryActivity
 import com.acaroom.apicallpjt.apiService.BoardService
+import com.acaroom.apicallpjt.data_domain.PhotoDto
 import com.acaroom.apicallpjt.dialog.ProgressDialog
 import com.acaroom.apicallpjt.recycler_view.BoardFormAdapter
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.board_holder.view.*
-import kotlinx.android.synthetic.main.fragment_write_form.view.*
+import kotlinx.android.synthetic.main.activit_login.*
+import kotlinx.android.synthetic.main.fragment_board_modify_fragment.view.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
-
-class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
+class BoardModifyFragment : Fragment(), MainActivity.onKeyBackPressedListener {
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_GALLERY_TAKE = 2
     var images = ArrayList<MultipartBody.Part>()
@@ -57,40 +52,44 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
     lateinit var customProgressDialog: ProgressDialog
     lateinit var dialog: AlertDialog.Builder
     var handler = Handler()
-    var boardPhotoList : ArrayList<Uri> = arrayListOf()
+    var boardPhotoList: ArrayList<Uri> = arrayListOf()
     val adapter = BoardFormAdapter(boardPhotoList)
     var retrofit = Config.getApiClient()
 
-
     var boardService = retrofit.create(BoardService::class.java)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_write_form, container, false)
+        val view = inflater.inflate(R.layout.fragment_board_modify_fragment, container, false)
+        val id = arguments?.getInt("id")!!
+        val userId = arguments?.getString("userId")!!
+        val title = arguments?.getString("title")
+        val content = arguments?.getString("content")
+        val photoList = arguments?.getSerializable("photo_list") as ArrayList<PhotoDto>
 
-        //제목 입력후 엔터키 누르면 내용 입력칸으로 이동
-        view.board_title.setOnKeyListener { v, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-               view.board_content.requestFocus()
-            }
-            true
+
+        view.board_title.setText(title)
+        view.board_content.setText(content)
+
+        for (photo in photoList) {
+            val uri = Uri.parse(Config.image + photo.fileName)
+            boardPhotoList.add(uri)
+            adapter.notifyDataSetChanged()
         }
+
 
 
         dialog = AlertDialog.Builder(view.context)
         dialog.setTitle("알림")
 
-        var activity: MainActivity
-        activity = (getActivity() as MainActivity?)!!
-        var recyclerView = view.upload_photo_list;
 
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
-        //아이템별 경계선 그리기
-        var div_deco = DividerItemDecoration(recyclerView.context, DividerItemDecoration.HORIZONTAL)
-        recyclerView.addItemDecoration(div_deco)
 
 
         view.my_image_btn.setOnClickListener {
@@ -104,16 +103,24 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         }
 
 
+        var activity: MainActivity
+        activity = (getActivity() as MainActivity?)!!
+        var recyclerView = view.upload_photo_list
+
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(activity, RecyclerView.HORIZONTAL, false)
+        //아이템별 경계선 그리기
+        var div_deco = DividerItemDecoration(recyclerView.context, DividerItemDecoration.HORIZONTAL)
+        recyclerView.addItemDecoration(div_deco)
+
         //로딩창 객체 생성
         customProgressDialog = ProgressDialog(view.context)
         //로딩창 투명하게
-        customProgressDialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+        customProgressDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        view.regist_btn.setOnClickListener {
+        view.modify_btn.setOnClickListener {
             var title = view.board_title.text.toString()
             var content = view.board_content.text.toString()
-
-
 
             if (title == "") {
                 Toast.makeText(view.context, "제목을 입력하세요", Toast.LENGTH_SHORT).show()
@@ -121,31 +128,38 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
                 Toast.makeText(view.context, "내용을 입력하세요", Toast.LENGTH_SHORT).show()
             } else {
 
-                //로딩화면 일부러 보여주려고 2초 지연줫음 ...
                 customProgressDialog.show()
-                postBoard(title, content)
-//                handler.postDelayed({
-//
-//                }, 500)
+                modifyBoard(id,userId,title, content)
 
             }
-
 
         }
 
         view.cancel_btn.setOnClickListener {
-            activity.supportFragmentManager.popBackStack("boardList" , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            val boardDetailFragment = BoardDetailFragment()
+            val bundle = Bundle(1)
+            bundle.putInt("id", id)
+            bundle.putString("userId", userId)
+            boardDetailFragment.arguments = bundle
+
+            activity.supportFragmentManager.popBackStack(
+                "boardModify",
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+            activity.supportFragmentManager.popBackStack(
+                "boardDetail",
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
             activity.supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment, BoardFragment())
-                .addToBackStack("boardList")
+                .replace(R.id.fragment, boardDetailFragment)
+                .addToBackStack("boardDetail")
                 .commit()
         }
 
         return view
     }
 
-
-    private fun postBoard(title: String, content: String) {
+    private fun modifyBoard(id:Int,userId:String,title: String, content: String) {
         if (destFiles?.size !=0) {
 
             for (file in destFiles!!) {
@@ -158,7 +172,6 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
 
         }
 
-
         val title_result = RequestBody.create(okhttp3.MultipartBody.FORM, title)
         val content_result = RequestBody.create(okhttp3.MultipartBody.FORM, content)
 
@@ -170,11 +183,9 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         map.put("title", title_result)
         map.put("content", content_result)
 
-        boardService.postBoard2(map, images)
-            .enqueue(object : Callback<Number> {
-                override fun onResponse(call: Call<Number>, response: Response<Number>) {
-
-
+        boardService.modifyBoard(id,map,images)
+            .enqueue(object : Callback<Long> {
+                override fun onResponse(call: Call<Long>, response: Response<Long>) {
                     if (response.isSuccessful) {
                         var result = response.body()
                         if (result != null) {
@@ -183,53 +194,42 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
                                 "예",
                                 DialogInterface.OnClickListener { _, _ ->
                                     customProgressDialog.dismiss()
+
+
+                                    val boardDetailFragment = BoardDetailFragment()
+                                    val bundle = Bundle(1)
+                                    bundle.putInt("id", id)
+                                    bundle.putString("userId", userId)
+                                    boardDetailFragment.arguments = bundle
                                     var activity = (activity as MainActivity?)!!
-                                    activity.supportFragmentManager.popBackStack("boardList" , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                                    activity.supportFragmentManager.popBackStack("boardModify", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                                    activity.supportFragmentManager.popBackStack("boardDetail", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                                     activity.supportFragmentManager.beginTransaction()
-                                        .replace(R.id.fragment, BoardFragment())
-                                        .addToBackStack("boardList")
+                                        .replace(R.id.fragment, boardDetailFragment)
+                                        .addToBackStack("boardModify")
                                         .commit()
                                 })
                             dialog.setCancelable(false)
-                            dialog.setMessage("등록되었습니다!").show()
+                            dialog.setMessage("수정 되었습니다!").show()
 
                         }
                     }
-
-
                 }
 
-                override fun onFailure(call: Call<Number>, t: Throwable) {
-                    Log.i("결과 메세지", t.message.toString())
-                    Log.i("결과 stackTrace", t.stackTrace.toString())
-                    Log.i("실패 : ", "전송 실패!!!")
-                    customProgressDialog.dismiss()
-                    dialog.setPositiveButton("예", DialogInterface.OnClickListener { _, _ ->
-                        customProgressDialog.dismiss()
-                    })
-                    dialog.setMessage("등록에 실패하였습니다 관리자에게 문의하세요!").show()
-
+                override fun onFailure(call: Call<Long>, t: Throwable) {
+                    TODO("Not yet implemented")
                 }
+
             })
-    }
 
-
-    //갤러리 열기
-    private fun openGalleryForImage() {
-
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GALLERY_TAKE)
 
     }
 
     //이미지피커 갤러리 열기(내가 만든거임)
     private fun openImagePicker() {
-        var intent = Intent(activity,GalleryActivity::class.java)
-        intent.putExtra("size",boardPhotoList)
-        startActivityForResult(intent,REQUEST_GALLERY_TAKE)
+        var intent = Intent(activity, GalleryActivity::class.java)
+        intent.putExtra("size", boardPhotoList)
+        startActivityForResult(intent, REQUEST_GALLERY_TAKE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -243,9 +243,10 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
                 if (requestCode == REQUEST_GALLERY_TAKE && resultCode == Activity.RESULT_OK) {
 
                     if (data != null) {
-                        var result_list: java.util.ArrayList<Uri> = data.getSerializableExtra("result_pic") as java.util.ArrayList<Uri>
+                        var result_list: java.util.ArrayList<Uri> =
+                            data.getSerializableExtra("result_pic") as java.util.ArrayList<Uri>
                         for (uri in result_list) {
-                            Log.i("결과" , uri.toString())
+                            Log.i("결과", uri.toString())
                             boardPhotoList.add(uri)
                             adapter.notifyDataSetChanged()
                             var imagePath = getRealPathFormURI(uri)
@@ -254,46 +255,14 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
                         }
                     }
 
-
-//                    if (data?.clipData == null) {
-//                        Log.i("사진 하나만 !", data?.data?.path.toString())
-//                        var uri = data?.data
-//                        if (uri != null) {
-//                            boardPhotoList.add(uri)
-//                            adapter.notifyDataSetChanged()
-//                            var imagePath = getRealPathFromURI2(uri)
-//                            if (imagePath != null) {
-//                                Log.i("uri결과 !", imagePath)
-//                            }
-//                            destFiles?.add(File(imagePath))
-//                        }
-//
-//                    } else {
-//                        Log.i("사진 여러개 !", data.clipData!!.getItemAt(0).uri.path.toString())
-//                        var clipDataResult = data.clipData
-//                        if (clipDataResult != null) {
-//                            for (i in 0 until clipDataResult.itemCount) {
-//                                var uri = clipDataResult.getItemAt(i).uri
-//                                boardPhotoList.add(uri)
-//                                adapter.notifyDataSetChanged()
-//                                var imagePath = getRealPathFromURI2(uri)
-//                                destFiles?.add(File(imagePath))
-//                            }
-//
-//
-//                        }
-//
-//                    }
-
                 }
             }
         }
     }
 
-
     //이미지 파일 절대경로 가져오기(이미지를 파일형태로 가져오기 위해 절대경로가 필요함)
     private fun getRealPathFormURI(contentURI: Uri?): String {
-        var result :String
+        var result: String
         var cursor = activity?.contentResolver?.query(contentURI!!, null, null, null, null)
         if (cursor == null) {
             result = contentURI?.path.toString()
@@ -305,33 +274,6 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         }
         return result
     }
-
-    //이미지 파일 절대경로 가져오기(여러 이미지를 파일형태로 가져오기 위함)
-    private fun getRealPathFromURI2(contentUri: Uri): String? {
-        if (contentUri.path!!.startsWith("/storage")) {
-            return contentUri.path
-        }
-        val id = DocumentsContract.getDocumentId(contentUri).split(":".toRegex()).toTypedArray()[1]
-        val columns = arrayOf(MediaStore.Files.FileColumns.DATA)
-        val selection = MediaStore.Files.FileColumns._ID + " = " + id
-        val cursor = activity?.contentResolver?.query(
-            MediaStore.Files.getContentUri("external"),
-            columns,
-            selection,
-            null,
-            null
-        )
-        try {
-            val columnIndex: Int = cursor!!.getColumnIndex(columns[0])
-            if (cursor.moveToFirst()) {
-                return cursor.getString(columnIndex)
-            }
-        } finally {
-            cursor!!.close()
-        }
-        return null
-    }
-
 
     //카메라 권한 요청 (카메라 접근 및 저장소 접근에 대한 요청)
     private fun requestPermission() {
@@ -348,9 +290,18 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
     //카메라 권한 체크( 카메라 접근 및 저장소 접근에 대한 체크)
     private fun checkPermission(): Boolean {
         return (
-                ContextCompat.checkSelfPermission(activity as MainActivity, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&  //카메라 권한
-                ContextCompat.checkSelfPermission(activity as MainActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && //저장소 읽기
-                ContextCompat.checkSelfPermission(activity as MainActivity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED //저장소 쓰기
+                ContextCompat.checkSelfPermission(
+                    activity as MainActivity,
+                    android.Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED &&  //카메라 권한
+                        ContextCompat.checkSelfPermission(
+                            activity as MainActivity,
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED && //저장소 읽기
+                        ContextCompat.checkSelfPermission(
+                            activity as MainActivity,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED //저장소 쓰기
                 )
     }
 
@@ -383,7 +334,6 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         activity?.setOnKeyBackPressedListener(null);
         activity?.onBackPressed()
     }
-
 
 
 }
