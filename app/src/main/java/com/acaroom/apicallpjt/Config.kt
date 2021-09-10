@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object Config{
     //http://seokseokna.iptime.org:8080
     //http:172.30.1.7:8080
-    const val  url: String = "http://seokseokna.iptime.org:8080/"
+    const val  url: String = "http://172.30.1.7:8080/"
     const val image: String = url+"/images/"
 
     var api = Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build().create(

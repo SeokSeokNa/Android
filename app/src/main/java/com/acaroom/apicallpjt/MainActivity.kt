@@ -17,12 +17,15 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentTransaction
 import com.acaroom.apicallpjt.activity.*
 import com.acaroom.apicallpjt.fragment.board.BoardFragment
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_drawer_header.view.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelectedListener {
+    private val TAG: String = "FirebaseMsgService"
     lateinit var navigationView: NavigationView
     lateinit var drawerLayout: DrawerLayout
     lateinit var barDrawerToggle: ActionBarDrawerToggle;
@@ -31,6 +34,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
+        //FCM 토큰 확인법
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.e(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            Log.e(TAG,"토큰 : ${token}")
+            //Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
 
         navigationView = nav
         drawerLayout = main_drawer_layout
