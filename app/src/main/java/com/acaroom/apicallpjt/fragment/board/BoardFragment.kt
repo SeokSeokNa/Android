@@ -69,6 +69,7 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
 
         var dialog = AlertDialog.Builder(view.context)
         dialog.setTitle("오류")
+        dialog.setCancelable(false)
         dialog.setPositiveButton("예", DialogInterface.OnClickListener() { _, _ ->
             (activity as MainActivity).supportFragmentManager.beginTransaction()
                 .remove(this)
@@ -127,6 +128,7 @@ class BoardFragment : Fragment() , MainActivity.onKeyBackPressedListener {
 
                 override fun onFailure(call: Call<List<BoardDto>>, t: Throwable) {
                     Toast.makeText(container?.context, t.message, Toast.LENGTH_SHORT).show()
+
                 }
             })
 
