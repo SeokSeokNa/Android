@@ -134,11 +134,7 @@ class WriteFormFragment : Fragment() , MainActivity.onKeyBackPressedListener {
         }
 
         view.cancel_btn.setOnClickListener {
-            activity.supportFragmentManager.popBackStack("boardList" , FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            activity.supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment, BoardFragment())
-                .addToBackStack("boardList")
-                .commit()
+            onBackKey()
         }
 
         return view

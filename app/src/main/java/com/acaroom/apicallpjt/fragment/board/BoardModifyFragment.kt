@@ -136,24 +136,7 @@ class BoardModifyFragment : Fragment(), MainActivity.onKeyBackPressedListener {
         }
 
         view.cancel_btn.setOnClickListener {
-            val boardDetailFragment = BoardDetailFragment()
-            val bundle = Bundle(1)
-            bundle.putInt("id", id)
-            bundle.putString("userId", userId)
-            boardDetailFragment.arguments = bundle
-
-            activity.supportFragmentManager.popBackStack(
-                "boardModify",
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
-            activity.supportFragmentManager.popBackStack(
-                "boardDetail",
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
-            activity.supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment, boardDetailFragment)
-                .addToBackStack("boardDetail")
-                .commit()
+            onBackKey();
         }
 
         return view
