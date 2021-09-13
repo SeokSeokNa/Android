@@ -2,6 +2,7 @@ package com.acaroom.apicallpjt.apiService
 
 import com.acaroom.apicallpjt.data_domain.BoardDto
 import com.acaroom.apicallpjt.data_domain.BoardFormDto
+import com.acaroom.apicallpjt.data_domain.BoardListDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -9,8 +10,8 @@ import retrofit2.http.*
 
 interface BoardService {
 
-    @GET("api/v1/board/list")
-    fun findBoardList(): Call<List<BoardDto>>
+    @GET("api/v2/board/list")
+    fun findBoardList(@Query("page") page:Int): Call<BoardListDto>
 
     @POST("api/v1/board/new")
     fun postBoard(@Body boardForm: BoardFormDto): Call<Number>

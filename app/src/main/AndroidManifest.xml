@@ -24,7 +24,6 @@
         <activity android:name=".activity.GalleryActivity"></activity>
         <!-- usesCleartextTraffic는 https 가 아니여도 통신가능하게...    , requestLegacyExternalStorage는 파일접근권한 -->
         <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.BoardListActivity" />
         <activity android:name=".activity.SubActivity" />
         <activity
             android:name=".MainActivity"
